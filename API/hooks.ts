@@ -3,6 +3,7 @@ import { CreateHookPayloadSchema, combineErrorStrings, ActivateHookPayload } fro
 import dbConn from "./db.js"
 const router = express.Router()
 import { uuid } from 'uuidv4';
+import e from "express";
 
 router.post("/api/create-hook", async (req, res) => {
 
@@ -60,7 +61,8 @@ router.post("/api/create-hook", async (req, res) => {
                 participant_ids: {
                     create: Array.from({ length: participants }).map((el, index) => ({
                         participant_id: all_participant_ids[index],
-                        consented: false
+                        consented: false,
+                        body: {}
                     }))
                 }
             },
@@ -90,9 +92,13 @@ const didAllConsent = async (hook_id) => {
             },
         });
 
-        console.log(hook_id, participants)
     
-        return participants.every((participant) => participant.consented);
+        const all_consented = participants.every((participant) => participant.consented);
+
+        if (all_consented) {
+            return participants
+        }
+
       } catch (error) {
         return false
       }
@@ -183,39 +189,31 @@ router.post("/api/activate-hook", async (req, res) => {
             })
         }
 
-        const newBody = hook.body
-
-        newBody[`${participant_id}`] = participantPayload
-
-        const updatedHook = await dbConn.hooks.update({
-            where: {
-                hook_id: hook_id as string,
-            },
-            data: {
-                body: newBody
-            }
-        });
   
-        await dbConn.participantId.update({
+        const updated = await dbConn.participantId.update({
             where: {
                 participant_id: participant_id as string,
             },
             data: {
                 consented: true,
+                body: participantPayload,
             },
         })
-
-
-        delete updatedHook.apiKeyId
-        delete updatedHook.id
 
         const allConsented = await didAllConsent(hook_id)
 
         if (allConsented) {
 
-            const { url, body, headers } = updatedHook
+            const { url, body, headers } = hook
+
+            body["payloads"] = {} as Object
+
+            allConsented.forEach(consented => {
+                body["payloads"][consented.participant_id] = consented.body
+            })
 
             let resp
+
             try {
                 resp = await fetch(url, {
                     method: "POST",
@@ -224,7 +222,7 @@ router.post("/api/activate-hook", async (req, res) => {
                 })
             } catch (err) {
                 return res.status(200).json({
-                    updatedHook,
+                    hook,
                     allConsented: true,
                     response: error.message
                 })
@@ -246,7 +244,7 @@ router.post("/api/activate-hook", async (req, res) => {
             await resetHook(hook_id)
 
             return res.status(200).json({
-                updatedHook,
+                success: true,
                 allConsented: true,
                 response: {
                     data: respData,
@@ -257,7 +255,7 @@ router.post("/api/activate-hook", async (req, res) => {
         }
 
         return res.status(200).json({
-            updatedHook,
+            success: true,
             allConsented: false
         })
 

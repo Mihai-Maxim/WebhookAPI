@@ -7,6 +7,7 @@ describe('Multi-Participant Consent Webhook API', () => {
   let authToken
   let apiKey;
   let webhookId;
+
   const randID = uuid()
 
 
@@ -127,6 +128,7 @@ describe('Participant Activation', () => {
 
   beforeAll(async () => {
     // Create a webhook with 3 participants
+    await logIn()
     const webhookResponse = await request(app)
       .post(`/api/create-hook?api_key=${apiKey}`)
       .send({
@@ -155,8 +157,6 @@ describe('Participant Activation', () => {
           'name': participantId,
           'data': 'finished ' + index
         });
-
-      console.log(webhookId, participantId, "heeere")
 
       expect(response.statusCode).toBe(200);
       if (response.body.allConsented === true) finalResp = response.body

@@ -45,6 +45,7 @@ model ParticipantId {
   hookId          Int
   participant_id  String           @unique
   consented       Boolean          @default(false)
+  body            Json             
 }
 
 
