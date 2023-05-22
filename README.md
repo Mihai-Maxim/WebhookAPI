@@ -17,7 +17,7 @@ By implementing this multi-participant consent webhook system, users can ensure 
 
 ## Endpoints
 
-### User Registration Endpoint
+### User Login Endpoint
 
 - Endpoint: `POST /api/login`
 - Description: This endpoint handles user login and authentication.
@@ -52,7 +52,7 @@ By implementing this multi-participant consent webhook system, users can ensure 
   ```
 - Response:
   - Status code:
-    - 200 OK: Successful login. The user is authenticated.
+    - 200 OK: Successful registration. The user is authenticated.
     - 409 Conflict: Register failed. There already exists an user with the provided email.
     - 400 Bad Request: The request payload is invalid or missing required fields.
 
