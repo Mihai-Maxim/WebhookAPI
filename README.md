@@ -1,7 +1,21 @@
-# WebhookAPI
- Create a webhook that requires multiple participants to consent in order for it to be activated / fired.
+# Multi-Participant Consent Webhook
 
-# Basic Workfolow
+The multi-participant consent webhook project aims to create a webhook system that requires multiple participants to give their consent before it can be activated or fired. This ensures that all participants involved in a particular process or event agree to proceed before any action is taken.
+
+## Basic Workflow
+
+1. **User Authentication**: Users log in to the system and obtain an API key associated with their email address. This API key will be used for subsequent API requests.
+
+2. **Webhook Creation**: The user creates a webhook by making a POST request to the designated API endpoint (`https://webhookapi/api/create-hook`). The request includes the necessary payload, which specifies the number of participants required for consent, the target URL where the webhook will be sent, the headers to be included in the request, and the initial body content.
+
+3. **Participant Activation**: Each participant involved in the webhook activates their individual participation by making a POST request to the activation endpoint (`https://webhookapi/api/activate-hook`). The request includes the specific webhook ID and the participant ID, uniquely identifying the participant. The participant can contribute additional data to the webhook's body, as specified in their payload.
+
+4. **Webhook Execution**: Once all the required participants have given their consent and activated their participation, the webhook is ready to be sent. The system generates a final POST request with the complete webhook data, including the target URL, headers, and a consolidated body containing the contributions from all participants. This request is sent to the specified target URL, triggering the desired action or event.
+
+By implementing this multi-participant consent webhook system, users can ensure that critical processes or events are not executed until all involved participants have explicitly given their consent. This provides a robust mechanism for ensuring the collective agreement and readiness of all parties involved in a webhook-based workflow.
+
+
+# Example Workfolow
 
 1. User gets an API key for an email address.
 ```javascript
