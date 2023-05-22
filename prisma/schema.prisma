@@ -1,0 +1,53 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_STRING")
+}
+
+
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  password   String
+  apiKeys    ApiKey[]
+}
+
+model ApiKey {
+  id         Int       @id @default(autoincrement())
+  key        String    @unique
+  user       User?     @relation(fields: [userId], references: [id])
+  userId     Int?
+  hooks      Hooks[]
+}
+
+
+model Hooks {
+  id                Int               @id @default(autoincrement())
+  apiKey            ApiKey            @relation(fields: [apiKeyId], references: [id])
+  apiKeyId          Int
+  hook_id           String            @unique
+  participant_ids   ParticipantId[]
+  url               String
+  headers           Json
+  body              Json
+}
+
+
+model ParticipantId {
+  id              Int              @id @default(autoincrement())
+  hook            Hooks            @relation(fields: [hookId], references: [id])
+  hookId          Int
+  participant_id  String           @unique
+  consented       Boolean          @default(false)
+}
+
+
+
+
+
