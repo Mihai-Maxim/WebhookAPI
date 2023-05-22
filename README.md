@@ -5,7 +5,7 @@
 
 1. User gets an API key for an email address.
 ```javascript
-https://webhookapi/api/get-api-key?email=example@gmail.com => 8adecb78-4b4d-4ba7-bd21-f96df2adb2fd
+https://webhookapi/api/get-api-key => 8adecb78-4b4d-4ba7-bd21-f96df2adb2fd
 ```
 2. User creates a webhook.
 ```javascript
