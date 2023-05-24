@@ -39,10 +39,17 @@ router.post("/api/login", async (req, res) => {
                 email,
             }
         })
+        
+        if (!user) {
+            return res.status(401).json({
+                success: false,
+                error: "invalid credentials"
+            })
+        }
 
         const passwordMatch = await compareHash(password, user.password)
-        
-        if (!user || !passwordMatch) {
+
+        if (!passwordMatch) {
             return res.status(401).json({
                 success: false,
                 error: "invalid credentials"
@@ -117,7 +124,6 @@ router.post("/api/register", async (req, res) => {
         })
 
     } catch (error) {
-        
         return dbError(res)
       }
     

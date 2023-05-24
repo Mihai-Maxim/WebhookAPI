@@ -4,10 +4,13 @@ import usersRouter from "./API/users.js"
 import apiKeysRouter from "./API/apiKeys.js"
 import hooksRouter from "./API/hooks.js"
 import * as dotenv from 'dotenv'
+import cors from "cors"
 
 dotenv.config()
 
 const app = express();
+
+app.use(cors({ origin: "*" }))
 
 app.use(bodyParser.json())
 

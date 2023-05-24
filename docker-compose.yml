@@ -1,0 +1,28 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      DATABASE_STRING: mysql://root:pass@db:3306/webhookapi
+      ACCESS_TOKEN_SECRET: abcdefg
+    ports:
+      - 3000:3000
+    container_name: app
+
+    depends_on:
+      - db
+  db:
+    image: mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: pass
+      MYSQL_DATABASE: webhookapi
+    ports:
+      - 3306:3306
+    container_name: db
+    volumes:
+      - ./db-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --sql-mode="" --default-authentication-plugin=mysql_native_password --init-file /docker-entrypoint-initdb.d/init.sql
